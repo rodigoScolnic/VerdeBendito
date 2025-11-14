@@ -1,0 +1,81 @@
+<%- include('./partials/head') %>
+
+<body>
+    <%- include('./partials/header') %>
+
+    <section class="all-products">
+        <div class="options">
+            <i class="fa-solid fa-chevron-down"></i><p>FILTROS</p> 
+        </div>
+        <div class="products-container">
+            <% allProducts.forEach(e => { %>
+                <a href="">
+                    <div class="card">
+                        <div class="card-top">
+                            <img src="<%= e.image %>" alt="<%= e.name %>">
+                            <h2><%= e.name %></h2>
+                            <h5><%= e.nickname %></h5>
+                        </div>
+                        <div class="card-bottom">
+                            <h3><%= e.category.name %></h3>
+                            <h2>$<%= e.price %></h2>
+                        </div>  
+                    </div>
+                </a>
+            <% }); %>
+        </div>
+    </section>
+
+    <%# left menu %>
+
+    <section class="left-menu-op">
+        <div class="chips-container">
+            <% if(filters.categoryId) {%>
+                <% const selectedCat = allCategories.find(c => c.id == filters.categoryId) %>
+                <span><%= selectedCat ? selectedCat.name : "" %></span>    
+            <% } %>
+            <% if (filters.priceMin || filters.priceMax) { %>
+                <span class="chip">
+                <%= filters.priceMin ? filters.priceMin : 0 %> -
+                <%= filters.priceMax ? filters.priceMax : '∞' %>
+                </span>
+            <% } %>
+            <% if(filters.name) {%>
+                <span><%= filters.name %></span>    
+            <% } %>
+        </div>
+        <div class="filter-container">
+            <form action="/products" id="filter-form">
+                <div class="input-container">
+                    <select name="category_id" id="filter-category">
+                        <option value="">Categoria...</option>
+                        <% allCategories.forEach(e => { %>
+                            <option value="<%= e.id %>"><%= e.name %></option>
+                        <% }) %>
+                    </select>
+                    <i class="fa-solid fa-angle-down"></i>
+                </div>
+                <div class="input-container" id="name">
+                    <input type="text" name="name" value="<%= filters.name %>" placeholder="Buscar por nombre">
+                </div>
+                <div class="input-container" id="price">
+                    <input type="number" name="price_min" value="<%= filters.price_min || '' %>" placeholder="Precio minimo">
+                    <input type="number" name="price_max" value="<%= filters.price_max || '' %>" placeholder="Precio maximo">                    
+                </div>
+                
+                
+                <button type="submit">APLICAR FILTROS</button>
+            </form>
+        </div>    
+    </section>
+
+    
+        
+   
+
+    <script src="script/index.js"></script>
+    <script src="script/product.js"></script>
+</body>
+
+</html>
+

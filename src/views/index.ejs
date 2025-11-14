@@ -1,0 +1,61 @@
+<%- include('./partials/head') %>
+
+<body>
+
+    <%- include('./partials/header') %>
+
+    <%# hero %>
+
+    <div class="hero">
+        <div class="hero-container">
+            <div class="hero-image">
+                <div class="leaf"></div>
+                <div class="circle1"></div>
+                <div class="circle2"></div>
+                <img src="https://www.hola.com/horizon/square/d96f3e4f79ea-elegir-decorar-con-plantas-01t-t.jpg" alt="">
+            </div>
+            <div class="hero-content">
+                <div class="hero-p">
+                    <h2>NATURALEZA QUE INSPIRA</h2>
+                    <p>Conectá con la naturaleza hoy, Explorá nuestra colección</p>
+                </div>
+                <div class="hero-btn">
+                    <a href="#">CLICK AQUI</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%# categories %>
+
+    <section class="categories-container">
+        <div class="search-container">
+            <input type="text" placeholder="BUSCA TU PRODUCTO IDEAL" id="searchInput">
+            <ul id="searchResults"></ul>
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+        <div class="swiper">
+            <div class="swiper-wrapper">
+                <% allCategories.forEach(category => { %>
+                        <div class="swiper-slide">
+                            <a href="">
+                                <h5><%= category.name.toUpperCase() %></h5> 
+                                <img src="<%= category.image %>" alt="<%= category.name %>">
+                            </a>
+                        </div> 
+                <% }); %>
+            </div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-pagination"></div>
+        </div>
+    </section>
+
+
+    
+
+
+<script src="script/index.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,621 @@
+@font-face {
+  font-family: 'plantWords';
+  src: url('/fonts/plantWords.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Ubuntu", sans-serif;
+    font-weight: 100;
+}
+
+header {
+    background-color: antiquewhite;
+    height: 100px;
+    display: flex;
+    justify-content: space-around;
+    position: relative;
+    z-index: 2;
+    align-items: center;
+}
+
+.h-menu-container, .logo-container, .user-container {
+    width: 33%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.h-menu-btn {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    width: 30px;
+    height: 20px;
+}
+
+.h-menu-btn span{
+    border-radius: 20px;
+    display: block;
+    width: 30px;
+    height: 4px;
+    background-color: olivedrab;
+}
+
+.logo-container h1 a{
+   text-decoration: none;
+   color: olivedrab;
+   font-family: 'plantWords', sans-serif;
+}
+
+.user-container i{
+    font-size: 30px;
+    cursor: pointer;
+    color: olivedrab;
+}
+
+/* menu hamburgesa, usuario */
+
+.h-menu, .u-menu {
+    pointer-events: none;
+    position: absolute;
+    z-index: 1;
+    opacity: 0;
+    top: -100px;
+    transition: all .5s ease-in-out;
+    width: 100%;
+    background-color: antiquewhite
+}
+
+.h-menu ul li, .u-menu ul li {
+    border-bottom: 1px solid sienna;
+    height: 60px;
+}
+
+.h-menu ul:first-child, .u-menu ul:first-child {
+    border-top: 1px solid rgba(160, 81, 45, 0.5);
+}
+
+.h-menu ul li a, .u-menu ul li a {
+
+    font-weight: bold;
+    text-decoration: none;
+    color: olivedrab;
+    display: flex;
+    align-items: center;
+    padding: 15px 10px;
+    height: 100%;
+    width: 100%;
+    cursor: pointer;
+}
+
+#signup-btn {
+    background-color: olivedrab;
+    color: antiquewhite;
+}
+
+.h-menu.active, .u-menu.active {
+    opacity: 1;
+    top: 100px;
+    pointer-events: all;
+}
+
+/* formularios modales */
+
+.modal-container {
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    z-index: 1000;
+    pointer-events: none;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: calc(100% - 100px);
+    background-color: rgba(0, 0, 0, 0.2);
+    transition: all .5s ease-in-out;
+}
+
+.modal-container.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.modal-content {
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    position: relative;
+    width: 400px;
+    height: 400px;
+    background-color: antiquewhite;
+    padding: 15px;
+    border: 3px solid olivedrab;
+    border-radius: 10px;
+}
+
+.modal-title {
+    position: absolute;
+    top: -90px;
+}
+
+.modal-title h2 {
+    font-family: 'plantWords';
+    font-size: 3em;
+    color: antiquewhite;
+}
+
+.modal-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.input-box {
+    position: relative;
+    width: 250px;
+    margin: 20px 0;
+  }
+
+ input {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: 2px solid olivedrab;
+    border-radius: 3px;
+    outline: none;
+    background: white;
+  }
+
+  /* El texto "placeholder" real lo manejamos con ::before */
+  .input-box::before {
+    content: attr(data-placeholder);
+    position: absolute;
+    left: 12px;
+    top: -50px;
+    color: #777;
+    transition: 0.3s ease all;
+    pointer-events: none;
+    background: white;
+    padding: 0 4px;
+  }
+
+  /* Cuando el input tiene focus o texto escrito */
+  input:focus ~ .input-box::before,
+  input:not(:placeholder-shown) ~ .input-box::before {
+    top: -70px;
+    left: 8px;
+    font-size: 12px;
+  }
+
+.form-btn {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.form-btn button{
+    cursor: pointer;
+    color: antiquewhite;
+    font-weight: bold;
+    width: 70%;
+    padding: 10px;
+    border: none;
+    background-color: olivedrab;
+    border-radius: 3px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
+}
+
+.form-btn button:hover {
+  background-color: rgb(78, 104, 26); /* tono más oscuro de olivedrab */
+  transform: translateY(2px);
+  transition: all 0.2s ease;
+}
+
+
+/* hero */
+
+.hero-container {
+    display: flex;
+    justify-content: center;
+    height: 500px;
+    position: relative;
+    background-color: khaki;
+}
+
+.hero-image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+}
+
+.hero-image img {
+    object-fit: cover;
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    border: 10px solid rgba(106, 142, 35, 0.5);
+}
+
+.circle1 {
+    position: absolute;
+
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    border: 10px solid rgba(106, 142, 35, 0.3);
+}
+
+.circle2 {
+    position: absolute;
+
+    width: 350px;
+    height: 350px;
+    border-radius: 50%;
+    border: 10px solid rgba(106, 142, 35, 0.1);
+}
+
+.hero-content {
+    text-align: center;
+    width: 100%;
+    height: 100px;
+    position: absolute;
+    bottom: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.hero-content h2 {
+    color: olivedrab;
+    font-family: 'plantWords', sans-serif;
+    font-size: 30px;
+}
+
+.hero-content p {
+    color: olivedrab;
+    font-weight: bold;
+}
+
+.hero-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+    width: 100%;;
+}
+
+.hero-btn a {
+    display: block;
+    background-color: olivedrab;
+    width: 200px;
+    padding: 10px;
+    text-decoration: none;
+    color: antiquewhite;
+    font-weight: bold;
+    border-radius: 3px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+    transition: all .2s ease-in-out;
+}
+
+.hero-btn a:hover {
+    transform: translateY(2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+/* categoryes */
+
+.categories-container {
+    background-color: antiquewhite;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 0;
+}
+
+.search-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 360px;
+}
+
+#searchResults {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 100;
+    width: 100%;
+    background-color: white;
+}
+
+#searchResults a {
+    color: black;
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+}
+
+#searchResults a:hover {
+    color: white;
+    background-color: rgb(187, 233, 187)
+}
+
+#searchResults.active {
+    border: 2px solid olivedrab;
+}
+
+#searchResults li {
+    border-bottom: 1px solid olivedrab;
+    list-style: none;
+}
+
+.search-container input {
+    width: 360px;
+}
+
+.search-container i {
+    position: absolute;
+    right: 20px;
+}
+
+.swiper {
+    margin-top: 100px;
+    width: 100%;
+}
+
+.swiper-slide {
+    border-radius: 3px;
+    width: 200px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all .5s;
+}
+
+.swiper-slide:hover{
+    transform: scale(1.01);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.swiper-slide h5 {
+    display: block;
+    width: 100%;
+    text-align: center;
+    backdrop-filter: blur(1px);
+    font-family: 'plantWords', sans-serif;
+    font-size: 15px;
+    font-weight: bold;
+    color: antiquewhite;
+    position: absolute;
+    bottom: 0;
+    margin-bottom: 15px;
+}
+
+.swiper-slide img{
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+}
+
+/* productos */
+
+.all-products {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.options {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: olivedrab;
+    transition: all .5s;
+}
+
+.options.active {
+    transform: translateY(300px);
+}
+
+.options p {
+    font-size: 12px;
+}
+
+.options i, .options p{
+    color: antiquewhite;
+    margin: 5px;
+    transition: all .5s;
+}
+
+.products-container {
+    padding: 20px;
+    width: 100%;
+    display: grid;
+    justify-items: center;
+    align-items: center;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.products-container a {
+    color: black;
+    text-decoration: none;
+    transition: all .5s;
+    box-shadow: 0 0 15px rgba(0, 0, 0, .5);
+    border-radius: 10px;
+}
+
+.products-container a:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(0, 0, 0, .5);
+}
+
+.card {
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: -1;
+}
+
+.card-top {
+    position: relative;
+}
+
+.card-top h2 {
+    text-align: center;
+    padding: 5px;
+    display: block;
+    width: 100%;
+    background-color: rgba(255, 255, 255, .5);
+    position: absolute;
+    bottom: 10px;
+    font-size: 15px;
+}
+
+.card-top h5 {
+    display: block;
+    width: 100%;
+    text-align: center;
+    position: absolute;
+    top: 10px;
+    background-color: white;
+}
+
+.card-bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card-bottom h3 {
+    font-size: 10px;
+    padding: 5px;
+    color: #777;
+}
+
+.card-bottom h2 {
+    font-size: 15px;
+}
+ 
+.card img {
+    width: 150px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/* OP MENUS */
+
+.left-menu-op {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: olivedrab;
+    height: 300px;
+    position: absolute;
+    z-index: 1;
+    top: -200px;
+    pointer-events: none;
+    transition: all .5s;
+}
+
+.left-menu-op.active {
+    top: 100px;
+    pointer-events: all;
+}
+
+.chips-container {
+    font-weight: bold;
+    margin-bottom: 30px;
+    width: 90%;
+}
+
+.chips-container span {
+    color: olivedrab;
+    font-size: 10px;
+    background-color: antiquewhite;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.input-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 100%;
+}
+
+#filter-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#filter-form button {
+    font-weight: bold;
+    width: 90%;
+    background-color: antiquewhite;
+    border: none;
+    color: olivedrab;
+    border-radius: 10px;
+    padding: 10px;
+    margin-top: 20px;
+}
+
+#filter-category {
+    appearance: none;
+    width: 90%;
+    padding: 12px;
+    font-size: 16px;
+    border: 2px solid olivedrab;
+    border-radius: 10px;
+    outline: none;
+    background: white;
+    color: #777;
+}
+
+.input-container i{
+    position: absolute;
+    color: olivedrab;
+    right: 30px;
+}
+
+#name, #price {
+    width: 90%;
+}
+
+#name input, #price input {
+    border-radius: 10px;
+}
