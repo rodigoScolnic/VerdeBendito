@@ -36,3 +36,18 @@
 .menu-signup:hover{background:#2f4022!important}
 .button-disabled{background:#e3e0d6;color:#55594f;border:1px solid #c8c5ba;opacity:1}
 @media(max-width:700px){.header-actions .icon-button{width:42px;height:42px}.header-icon{width:19px;height:19px}}
+
+
+/* Mantener el botón Crear cuenta legible también al pasar el cursor */
+.u-menu a.menu-signup,
+.u-menu a.menu-signup:hover,
+.u-menu a.menu-signup:focus-visible{
+  background:var(--olive-dark);
+  color:#fff!important;
+}
+.u-menu a.menu-signup:hover,
+.u-menu a.menu-signup:focus-visible{
+  background:#2f4022;
+  color:#fff!important;
+  box-shadow:0 4px 12px rgba(62,81,41,.18);
+}
