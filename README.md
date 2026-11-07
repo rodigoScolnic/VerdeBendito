@@ -13,7 +13,7 @@ Tienda online construida con Node.js, Express, EJS, Sequelize y MySQL.
 3. Copiá `.env.example` como `.env` y completá los datos de MySQL.
 4. Ejecutá `npm run dev` para desarrollo o `npm start` para iniciar el servidor.
 
-La aplicación escucha en `PORT` (3000 por defecto). En producción también es obligatorio definir `SESSION_SECRET`.
+La aplicación escucha en `PORT` (3000 por defecto). En producción también es obligatorio definir `SESSION_SECRET`. Las sesiones y el carrito se guardan en la misma base MySQL para no depender de la memoria del proceso.
 
 ## Funcionalidades
 - Catálogo de productos y categorías.
