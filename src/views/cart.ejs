@@ -1,4 +1,4 @@
-<%- include('./partials/head', { pageTitle: "Mi carrito | SAVYA" }) %>
+<%- include('./partials/head', { pageTitle: "Mi carrito | VERDEBENDITO" }) %>
 <body><%- include('./partials/header') %>
   <main class="section-wrap cart-page">
     <div class="catalog-heading"><span class="eyebrow">TUS FAVORITOS, MÁS CERCA</span><h1>Mi carrito</h1><p>Revisá tu selección antes de continuar.</p></div>
@@ -6,12 +6,12 @@
       <div class="cart-layout"><div class="cart-items">
         <% items.forEach(item => { %><article class="cart-item">
           <a class="cart-item-image" href="/products/<%= item.product.id %>"><img src="<%= item.product.image || '/image/all-category.png' %>" alt="<%= item.product.name %>"></a>
-          <div class="cart-item-info"><span class="product-category"><%= item.product.nickname || "SAVYA" %></span><h2><a href="/products/<%= item.product.id %>"><%= item.product.name %></a></h2><strong>$<%= Number(item.product.price).toLocaleString("es-AR") %></strong>
+          <div class="cart-item-info"><span class="product-category"><%= item.product.nickname || "VERDEBENDITO" %></span><h2><a href="/products/<%= item.product.id %>"><%= item.product.name %></a></h2><strong>$<%= Number(item.product.price).toLocaleString("es-AR") %></strong>
             <form class="quantity-form" action="/cart/<%= item.product.id %>/update" method="POST"><label for="qty-<%= item.product.id %>">Cantidad</label><input id="qty-<%= item.product.id %>" type="number" name="quantity" min="0" max="<%= item.product.stock || 99 %>" value="<%= item.quantity %>"><button type="submit" class="text-link">Actualizar</button></form>
             <form action="/cart/<%= item.product.id %>/remove" method="POST"><button type="submit" class="remove-link">Quitar</button></form>
           </div><strong class="cart-subtotal">$<%= item.subtotal.toLocaleString("es-AR") %></strong>
         </article><% }) %>
       </div><aside class="cart-summary"><span class="eyebrow">RESUMEN</span><h2>Tu selección</h2><div class="summary-row"><span>Subtotal</span><strong>$<%= total.toLocaleString("es-AR") %></strong></div><p>El costo de envío y los medios de pago se confirmarán al coordinar el pedido.</p><button class="button button-disabled" type="button" disabled>Finalización de compra próximamente</button><a class="text-link" href="/products">Seguir explorando ↗</a></aside></div>
     <% } else { %><div class="empty-state"><span>✳</span><h2>Tu carrito está esperando algo verde</h2><p>Todavía no agregaste productos. Explorá la colección y encontrá tu próximo favorito.</p><a class="button button-primary" href="/products">Explorar productos</a></div><% } %>
-  </main><footer class="site-footer"><a class="brand" href="/">SAVYA<span>·</span></a><p>Un espacio para conectar con lo natural.</p></footer>
+  </main><footer class="site-footer"><a class="brand" href="/">VERDEBENDITO<span>·</span></a><p>Un espacio para conectar con lo natural.</p></footer>
 </body></html>
