@@ -7,6 +7,8 @@ import { fileURLToPath } from "url";
 import { DataTypes } from "sequelize";
 
 import sequelize from "./src/data/config.js";
+import db from "./src/data/models/index.js";
+import { categories, products } from "./src/data/seed/catalog.js";
 import userLoggedMiddleware from "./src/middleware/userLogged.js";
 import mainRouter from "./src/routers/mainRouter.js";
 import userRouter from "./src/routers/userRouter.js";
@@ -97,6 +99,29 @@ const start = async () => {
   try {
     await sequelize.authenticate();
     await sequelize.sync();
+
+    // Carga el catálogo original una sola vez, únicamente si ambas tablas están vacías.
+    const [categoryCount, productCount] = await Promise.all([
+      db.Category.count(),
+      db.Product.count()
+    ]);
+
+    if (categoryCount === 0 && productCount === 0) {
+      await db.Category.bulkCreate(categories);
+      await db.Product.bulkCreate(products);
+
+      // Sincroniza las secuencias de PostgreSQL con los IDs importados.
+      await sequelize.query(
+        "SELECT setval(pg_get_serial_sequence('categories', 'id'), (SELECT MAX(id) FROM categories), true)"
+      );
+      await sequelize.query(
+        "SELECT setval(pg_get_serial_sequence('products', 'id'), (SELECT MAX(id) FROM products), true)"
+      );
+
+      console.log("Catálogo inicial cargado: 8 categorías y 70 productos.");
+    } else if (categoryCount === 0 || productCount === 0) {
+      console.warn("El catálogo no se importó porque solo una de las tablas está vacía. Revisá categories y products en la base de datos.");
+    }
     const port = Number(process.env.PORT) || 3000;
     app.listen(port, () => console.log("VerdeBendito escuchando en el puerto " + port));
   } catch (error) {
