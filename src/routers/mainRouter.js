@@ -1,13 +1,10 @@
-import express from "express"
-import mainController from "../controllers/mainController.js"
-
+import express from "express";
+import mainController from "../controllers/mainController.js";
 const router = express.Router();
-
-router.get('/' , mainController.index);
-router.get('/register', mainController.register)
-router.get('/login', mainController.login)
-router.get('/products', mainController.products)
-router.get('/search' , mainController.search)
-
-
-export default router
+router.get("/", mainController.index);
+router.get("/products", mainController.products);
+router.get("/products/:id", mainController.productDetail);
+router.get("/search", mainController.search);
+router.get("/login", (req, res) => res.render("login", { error: null, oldData: {} }));
+router.get("/register", (req, res) => res.render("register", { error: null, oldData: {} }));
+export default router;

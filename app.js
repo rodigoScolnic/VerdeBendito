@@ -1,65 +1,68 @@
 import express from "express";
-import sequelize from "./src/data/config.js"
-import dotenv from "dotenv"
-import methodOverride from "method-override"
-import { fileURLToPath } from "url"
-import path from "path"
-import session from 'express-session'
-import bcrypt from 'bcrypt'
+import session from "express-session";
+import methodOverride from "method-override";
+import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
+import sequelize from "./src/data/config.js";
+import userLoggedMiddleware from "./src/middleware/userLogged.js";
+import mainRouter from "./src/routers/mainRouter.js";
+import userRouter from "./src/routers/userRouter.js";
+import cartRouter from "./src/routers/cartRouter.js";
 
-const app = express()
+dotenv.config();
+const app = express();
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const production = process.env.NODE_ENV === "production";
+if (production) app.set("trust proxy", 1);
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+app.disable("x-powered-by");
+app.use(express.json());
+app.use(express.urlencoded({ extended: true, limit: "20kb" }));
+app.use(methodOverride("_method"));
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "src/views"));
+app.use(express.static(path.join(__dirname, "public")));
 
-dotenv.config()
-
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-app.use(methodOverride('_method'));
-
-app.set('view engine' , 'ejs');
-app.set('views', path.join(__dirname, 'src/views'))
-
-app.use(express.static(path.join(__dirname , 'public')))
-
+if (production && !process.env.SESSION_SECRET) {
+  throw new Error("Configurá SESSION_SECRET en las variables de entorno.");
+}
 app.use(session({
-  secret: 'clave-super-secreta',   
-  resave: false,                   
-  saveUninitialized: false,        
-  cookie: { 
-    maxAge: 1000 * 60 * 60,       
-    secure: false               
-  }
+  name: "verde.sid",
+  secret: process.env.SESSION_SECRET || "clave-solo-para-desarrollo",
+  resave: false,
+  saveUninitialized: false,
+  cookie: { httpOnly: true, sameSite: "lax", secure: production, maxAge: 86400000 }
 }));
 
-import userLoggedMiddleware from './src/middleware/userLogged.js'
-
 app.use(userLoggedMiddleware);
+app.use("/", mainRouter);
+app.use("/", userRouter);
+app.use("/", cartRouter);
 
+app.use((req, res) => res.status(404).render("error", {
+  title: "Página no encontrada",
+  message: "No encontramos lo que estás buscando."
+}));
+app.use((err, req, res, next) => {
+  console.error("Error de aplicación:", err);
+  if (res.headersSent) return next(err);
+  res.status(500).render("error", {
+    title: "Tuvimos un inconveniente",
+    message: "No pudimos completar tu solicitud. Intentá nuevamente."
+  });
+});
 
-import mainRouter from "./src/routers/mainRouter.js"
-import userRouter from "./src/routers/userRouter.js"
-
-app.use('/', mainRouter)
-app.use('/', userRouter)
-
-/* crear una contraseña hasheada 
-
-const password = "admin";
-const saltRounds = 10;
-
-const hashedPassword = await bcrypt.hash(password, saltRounds);
-console.log(hashedPassword);
-
--- cambiar 'admin' por lo que se desee (solo para administrador) */
-
-sequelize
-    .sync({ alter: true })
-    .then(() => console.log("✅ Base de datos sincronizada"))
-    .catch(err => console.error("❌ Error al sincronizar DB:", err));
-
-app.listen( process.env.PORT , ()=> {
-    console.log(`servidor escuchando en el puerto ${process.env.PORT}`)
-})
-
+const start = async () => {
+  try {
+    await sequelize.authenticate();
+    await sequelize.sync();
+    const port = Number(process.env.PORT) || 3000;
+    app.listen(port, () => console.log(`VerdeBendito escuchando en el puerto ${port}`));
+  } catch (error) {
+    console.error("No se pudo iniciar la aplicación:", error);
+    process.exit(1);
+  }
+};
+start();
+export default app;

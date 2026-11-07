@@ -1,74 +1,53 @@
-import User from "../data/models/User.js"
-import { Sequelize } from 'sequelize';
-import bcrypt from 'bcrypt'
-
+import bcrypt from "bcrypt";
+import User from "../data/models/User.js";
 
 const userController = {
-    singin: async (req, res) => {
-        
-        try {
-         const newUser = await User.create({
-            username: req.body.username,
-            email: req.body.email,
-            password: await bcrypt.hash(req.body.password, 10)
-            })
+  register: async (req, res, next) => {
+    const username = String(req.body.username || "").trim();
+    const email = String(req.body.email || "").trim().toLowerCase();
+    const password = String(req.body.password || "");
+    const confirmPassword = String(req.body.confirmPassword || "");
+    const renderError = (error, status = 400) => res.status(status).render("register", {
+      error, oldData: { username, email }
+    });
 
-        res.redirect('/')
+    if (username.length < 2 || username.length > 40) return renderError("El nombre debe tener entre 2 y 40 caracteres.");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return renderError("Ingresá un correo electrónico válido.");
+    if (password.length < 8) return renderError("La contraseña debe tener al menos 8 caracteres.");
+    if (password !== confirmPassword) return renderError("Las contraseñas no coinciden.");
 
-        }catch(err) {
-            res.send(err)
-        }        
-    },
-
-    login: async (req, res) => {
-
-        const { email, password} = req.body;
-        
-        try { 
-            
-            const user = await User.findOne({where: { email }})
-
-            if( !user ) {
-                return res.render('login', {
-                    error: 'Email o password incorrect', 
-                    oldData: req.body
-                })
-            }
-
-            const pMatch = await bcrypt.compare(password, user.password)
-
-            if( !pMatch) {
-                return res.render('login', {
-                    error: 'Email o password incorrect' ,
-                    oldData: req.body
-                })
-            }
-
-            req.session.user = {
-                id: user.id,
-                email: user.email,
-                username: user.username,
-                role: user.role
-            }
-            
-            
-             res.redirect('/')
-
-
-
-
-        }catch(err){
-            res.json(err)
-        }
-    },
-
-    logout: async (req, res) => {
-
-        req.session.destroy()
-        
-        res.redirect('/');
-
-    }
-}
-
-export default userController
+    try {
+      if (await User.findOne({ where: { email } })) return renderError("Ya existe una cuenta con ese correo.", 409);
+      const user = await User.create({ username, email, password: await bcrypt.hash(password, 12) });
+      req.session.regenerate((error) => {
+        if (error) return next(error);
+        req.session.user = { id: user.id, email: user.email, username: user.username, role: user.role };
+        req.session.notice = "¡Tu cuenta fue creada! Ya podés empezar a explorar.";
+        req.session.save((saveError) => saveError ? next(saveError) : res.redirect("/"));
+      });
+    } catch (error) { next(error); }
+  },
+  login: async (req, res, next) => {
+    const email = String(req.body.email || "").trim().toLowerCase();
+    const password = String(req.body.password || "");
+    try {
+      const user = await User.findOne({ where: { email } });
+      const valid = user && await bcrypt.compare(password, user.password);
+      if (!valid) return res.status(401).render("login", {
+        error: "El correo o la contraseña son incorrectos.", oldData: { email }
+      });
+      req.session.regenerate((error) => {
+        if (error) return next(error);
+        req.session.user = { id: user.id, email: user.email, username: user.username, role: user.role };
+        req.session.notice = `¡Hola, ${user.username}! Qué bueno verte de nuevo.`;
+        req.session.save((saveError) => saveError ? next(saveError) : res.redirect("/"));
+      });
+    } catch (error) { next(error); }
+  },
+  logout: (req, res, next) => req.session.destroy((error) => {
+    if (error) return next(error);
+    res.clearCookie("verde.sid");
+    res.redirect("/");
+  })
+};
+export default userController;

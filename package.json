@@ -1,16 +1,13 @@
 {
-  "name": "e-commerce",
-  "version": "1.0.0",
-  "description": "",
+  "name": "verde-bendito",
+  "version": "1.1.0",
+  "description": "Tienda online de plantas y productos para el hogar",
   "main": "app.js",
   "type": "module",
   "scripts": {
-  "start": "node index.js",
-  "dev": "nodemon index.js"
-},
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
   "dependencies": {
     "bcrypt": "^6.0.0",
     "dotenv": "^17.2.3",
