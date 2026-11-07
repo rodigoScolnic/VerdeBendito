@@ -1,10 +1,10 @@
-<%- include('./partials/head', { pageTitle: product.name + " | SAVYA" }) %>
+<%- include('./partials/head', { pageTitle: product.name + " | VERDEBENDITO" }) %>
 <body><%- include('./partials/header') %>
   <main class="section-wrap detail-page">
     <a class="back-link" href="/products">← Volver a productos</a>
     <div class="product-detail">
       <div class="detail-image"><img src="<%= product.image || '/image/all-category.png' %>" alt="<%= product.name %>"></div>
-      <div class="detail-copy"><span class="eyebrow"><%= product.category ? product.category.name : "COLECCIÓN SAVYA" %></span><h1><%= product.name %></h1>
+      <div class="detail-copy"><span class="eyebrow"><%= product.category ? product.category.name : "COLECCIÓN VERDEBENDITO" %></span><h1><%= product.name %></h1>
         <% if (product.nickname) { %><p class="detail-nickname"><%= product.nickname %></p><% } %>
         <strong class="detail-price">$<%= Number(product.price).toLocaleString("es-AR") %></strong>
         <p class="detail-description"><%= product.description %></p>
@@ -13,5 +13,5 @@
       </div>
     </div>
   </main>
-  <footer class="site-footer"><a class="brand" href="/">SAVYA<span>·</span></a><p>Un espacio para conectar con lo natural.</p></footer>
+  <footer class="site-footer"><a class="brand" href="/">VERDEBENDITO<span>·</span></a><p>Un espacio para conectar con lo natural.</p></footer>
 </body></html>
