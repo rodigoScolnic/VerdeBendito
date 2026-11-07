@@ -4,6 +4,8 @@ import methodOverride from "method-override";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
+import { DataTypes } from "sequelize";
+
 import sequelize from "./src/data/config.js";
 import userLoggedMiddleware from "./src/middleware/userLogged.js";
 import mainRouter from "./src/routers/mainRouter.js";
@@ -24,11 +26,49 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "src/views"));
 app.use(express.static(path.join(__dirname, "public")));
 
+const SessionRecord = sequelize.define("SessionRecord", {
+  sid: { type: DataTypes.STRING(255), primaryKey: true },
+  expires: { type: DataTypes.DATE, allowNull: true },
+  data: { type: DataTypes.TEXT("long"), allowNull: false }
+}, { tableName: "sessions", timestamps: false });
+
+class SequelizeSessionStore extends session.Store {
+  get(sid, callback) {
+    SessionRecord.findByPk(sid).then(async (record) => {
+      if (!record) return callback(null, null);
+      if (record.expires && record.expires.getTime() <= Date.now()) {
+        await record.destroy();
+        return callback(null, null);
+      }
+      callback(null, JSON.parse(record.data));
+    }).catch(callback);
+  }
+  set(sid, sessionData, callback) {
+    const expires = sessionData.cookie && sessionData.cookie.expires
+      ? new Date(sessionData.cookie.expires)
+      : new Date(Date.now() + 86400000);
+    SessionRecord.upsert({ sid, expires, data: JSON.stringify(sessionData) })
+      .then(() => { if (callback) callback(null); }).catch(callback);
+  }
+  destroy(sid, callback) {
+    SessionRecord.destroy({ where: { sid } })
+      .then(() => { if (callback) callback(null); }).catch(callback);
+  }
+  touch(sid, sessionData, callback) {
+    const expires = sessionData.cookie && sessionData.cookie.expires
+      ? new Date(sessionData.cookie.expires)
+      : new Date(Date.now() + 86400000);
+    SessionRecord.update({ expires }, { where: { sid } })
+      .then(() => { if (callback) callback(null); }).catch(callback);
+  }
+}
+
 if (production && !process.env.SESSION_SECRET) {
   throw new Error("Configurá SESSION_SECRET en las variables de entorno.");
 }
 app.use(session({
   name: "verde.sid",
+  store: new SequelizeSessionStore(),
   secret: process.env.SESSION_SECRET || "clave-solo-para-desarrollo",
   resave: false,
   saveUninitialized: false,
@@ -58,7 +98,7 @@ const start = async () => {
     await sequelize.authenticate();
     await sequelize.sync();
     const port = Number(process.env.PORT) || 3000;
-    app.listen(port, () => console.log(`VerdeBendito escuchando en el puerto ${port}`));
+    app.listen(port, () => console.log("VerdeBendito escuchando en el puerto " + port));
   } catch (error) {
     console.error("No se pudo iniciar la aplicación:", error);
     process.exit(1);
