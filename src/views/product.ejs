@@ -1,0 +1,17 @@
+<%- include('./partials/head', { pageTitle: product.name + " | SAVYA" }) %>
+<body><%- include('./partials/header') %>
+  <main class="section-wrap detail-page">
+    <a class="back-link" href="/products">← Volver a productos</a>
+    <div class="product-detail">
+      <div class="detail-image"><img src="<%= product.image || '/image/all-category.png' %>" alt="<%= product.name %>"></div>
+      <div class="detail-copy"><span class="eyebrow"><%= product.category ? product.category.name : "COLECCIÓN SAVYA" %></span><h1><%= product.name %></h1>
+        <% if (product.nickname) { %><p class="detail-nickname"><%= product.nickname %></p><% } %>
+        <strong class="detail-price">$<%= Number(product.price).toLocaleString("es-AR") %></strong>
+        <p class="detail-description"><%= product.description %></p>
+        <% if (product.stock === 0) { %><p class="out-of-stock">Este producto no tiene stock disponible por el momento.</p><button class="button button-disabled" disabled>Sin stock</button>
+        <% } else { %><form class="add-cart-form" action="/cart/<%= product.id %>/add" method="POST"><label for="quantity">Cantidad</label><input id="quantity" type="number" name="quantity" min="1" max="<%= product.stock || 99 %>" value="1"><button class="button button-primary" type="submit">Agregar al carrito ↗</button></form><% if (product.stock != null) { %><small class="stock-note"><%= product.stock %> unidades disponibles</small><% } %><% } %>
+      </div>
+    </div>
+  </main>
+  <footer class="site-footer"><a class="brand" href="/">SAVYA<span>·</span></a><p>Un espacio para conectar con lo natural.</p></footer>
+</body></html>

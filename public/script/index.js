@@ -1,126 +1,59 @@
-const hMenuBtn = document.querySelector('.h-menu-btn')
-const hMenu =  document.querySelector('.h-menu')
-const uMenuBtn = document.querySelector('.fa-user')
-const uMenu =  document.querySelector('.u-menu')
-
-hMenuBtn.addEventListener('click', ()=> {
-    hMenu.classList.toggle('active')
-    uMenu.classList.remove('active')
-    modalContainer.classList.remove('active')
-
-})
-
-uMenuBtn.addEventListener('click', ()=> {
-    uMenu.classList.toggle('active')
-    hMenu.classList.remove('active')
-    signUpModal.classList.remove('active')
-    logInModal.classList.remove('active')
-})
-
-document.addEventListener('click', (e) => {
-    if(!hMenu.contains(e.target) && !hMenuBtn.contains(e.target)) {
-        hMenu.classList.remove('active')
-    }
-})
-
-document.addEventListener('click', (e) => {
-    if(!uMenu.contains(e.target) && !uMenuBtn.contains(e.target)) {
-        uMenu.classList.remove('active')
-    }
-})
-
-const signUpModal = document.querySelector('#signup-modal')
-const logInModal = document.querySelector('#login-modal')
-const signUpBtn = document.querySelector('#signup-btn')
-const logInBtn = document.querySelector('#login-btn')
-
-signUpBtn.addEventListener('click', (e)=> {
-    e.preventDefault()
-    uMenu.classList.remove('active')
-    signUpModal.classList.add('active')
-})
-
-signUpModal.addEventListener('click', (e)=>{
-    if(e.target === signUpModal){
-        signUpModal.classList.remove('active')
-    }
-})
-
-logInModal.addEventListener('click', (e)=>{
-    if(e.target === logInModal){
-        logInModal.classList.remove('active')
-    }
-})
-
-logInBtn.addEventListener('click', (e)=> {
-    e.preventDefault()
-    uMenu.classList.remove('active')
-    logInModal.classList.add('active')
-})
-
-/* categories */
-
-const swiper = new Swiper('.swiper', {
-    loop: true,
-    slidesPerView: 3,
-    spaceBetween: 15,
-    navigation: {
-        nextEl: ".swiper-button-next", 
-        prevEl: ".swiper-button-prev",
-    },
-    pagination: {
-        el: '.swiper-pagination',
-    },
-    autoplay: {
-        delay: 3000,
-        pauseOnMouseEnter: true,
-    },
+document.addEventListener("DOMContentLoaded", () => {
+  const menuButton = document.querySelector(".h-menu-btn");
+  const menu = document.querySelector(".h-menu");
+  const userButton = document.querySelector(".user-menu-btn");
+  const userMenu = document.querySelector(".u-menu");
+  const closeMenus = () => {
+    menu?.classList.remove("active"); userMenu?.classList.remove("active");
+    menuButton?.setAttribute("aria-expanded", "false"); userButton?.setAttribute("aria-expanded", "false");
+  };
+  menuButton?.addEventListener("click", () => {
+    const open = !menu.classList.contains("active"); closeMenus();
+    menu.classList.toggle("active", open); menuButton.setAttribute("aria-expanded", String(open));
   });
-
-  /* serach bar */
-
- const input = document.getElementById('searchInput');
-  const results = document.getElementById('searchResults');
-
-  input.addEventListener('input', async () => {
-    const query = input.value.trim();
-    results.innerHTML = '';
-
-    if (query.length < 1){
-        results.classList.remove('active')
-        return;
-    }  // no buscar si está vacío
-
-    try {
-      const res = await fetch(`/search?q=${encodeURIComponent(query)}`);
-      const data = await res.json();
-
-      if (data.length === 0) {
-        results.innerHTML = '<li>No se encontraron productos</li>';
-        results.classList.remove('active')
-        return;
-      }
-
-      
-
-      data.forEach(p => {
-        const li = document.createElement('li');
-         const a = document.createElement('a');
-        a.textContent = `${p.nickname} - ${p.name}`;
-        a.href = `/products/${p.id}`; // <-- cambia esta ruta según tu sistema
-        a.style.textDecoration = 'none';
-        li.appendChild(a);
-        results.appendChild(li);
-      });
-
-      results.classList.add('active')
-    } catch (err) {
-      console.error(err);
-    }
+  userButton?.addEventListener("click", () => {
+    const open = !userMenu.classList.contains("active"); closeMenus();
+    userMenu.classList.toggle("active", open); userButton.setAttribute("aria-expanded", String(open));
   });
+  document.addEventListener("click", event => {
+    if (!event.target.closest(".h-menu, .h-menu-btn, .u-menu, .user-menu-btn")) closeMenus();
+  });
+  document.addEventListener("keydown", event => { if (event.key === "Escape") closeMenus(); });
 
+  const input = document.querySelector("#searchInput");
+  const results = document.querySelector("#searchResults");
+  let debounce;
+  if (input && results) {
+    input.addEventListener("input", () => {
+      clearTimeout(debounce);
+      const query = input.value.trim(); results.replaceChildren(); results.classList.remove("active");
+      if (query.length < 2) return;
+      debounce = setTimeout(async () => {
+        try {
+          const response = await fetch(`/search?q=${encodeURIComponent(query)}`);
+          if (!response.ok) throw new Error("Falló la búsqueda");
+          const products = await response.json(); results.replaceChildren();
+          if (!products.length) {
+            const li = document.createElement("li"); li.textContent = "No encontramos productos"; results.appendChild(li);
+          } else products.forEach(product => {
+            const li = document.createElement("li"), link = document.createElement("a");
+            link.href = `/products/${encodeURIComponent(product.id)}`;
+            link.textContent = [product.nickname, product.name].filter(Boolean).join(" · ");
+            li.appendChild(link); results.appendChild(li);
+          });
+          results.classList.add("active");
+        } catch (error) { console.error(error); }
+      }, 220);
+    });
+    document.addEventListener("click", event => {
+      if (!event.target.closest(".search-container")) results.classList.remove("active");
+    });
+  }
 
-
-
-
-
+  const slider = document.querySelector(".category-swiper");
+  if (slider && window.Swiper) new Swiper(slider, {
+    slidesPerView: 1.25, spaceBetween: 14, loop: slider.querySelectorAll(".swiper-slide").length > 3,
+    pagination: { el: slider.querySelector(".swiper-pagination"), clickable: true },
+    breakpoints: { 560: { slidesPerView: 2.2 }, 800: { slidesPerView: 3.2 }, 1100: { slidesPerView: 4 } }
+  });
+});

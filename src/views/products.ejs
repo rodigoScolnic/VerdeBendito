@@ -1,81 +1,24 @@
-<%- include('./partials/head') %>
-
+<%- include('./partials/head', { pageTitle: "Productos | SAVYA" }) %>
 <body>
-    <%- include('./partials/header') %>
-
-    <section class="all-products">
-        <div class="options">
-            <i class="fa-solid fa-chevron-down"></i><p>FILTROS</p> 
-        </div>
-        <div class="products-container">
-            <% allProducts.forEach(e => { %>
-                <a href="">
-                    <div class="card">
-                        <div class="card-top">
-                            <img src="<%= e.image %>" alt="<%= e.name %>">
-                            <h2><%= e.name %></h2>
-                            <h5><%= e.nickname %></h5>
-                        </div>
-                        <div class="card-bottom">
-                            <h3><%= e.category.name %></h3>
-                            <h2>$<%= e.price %></h2>
-                        </div>  
-                    </div>
-                </a>
-            <% }); %>
-        </div>
-    </section>
-
-    <%# left menu %>
-
-    <section class="left-menu-op">
-        <div class="chips-container">
-            <% if(filters.categoryId) {%>
-                <% const selectedCat = allCategories.find(c => c.id == filters.categoryId) %>
-                <span><%= selectedCat ? selectedCat.name : "" %></span>    
-            <% } %>
-            <% if (filters.priceMin || filters.priceMax) { %>
-                <span class="chip">
-                <%= filters.priceMin ? filters.priceMin : 0 %> -
-                <%= filters.priceMax ? filters.priceMax : '∞' %>
-                </span>
-            <% } %>
-            <% if(filters.name) {%>
-                <span><%= filters.name %></span>    
-            <% } %>
-        </div>
-        <div class="filter-container">
-            <form action="/products" id="filter-form">
-                <div class="input-container">
-                    <select name="category_id" id="filter-category">
-                        <option value="">Categoria...</option>
-                        <% allCategories.forEach(e => { %>
-                            <option value="<%= e.id %>"><%= e.name %></option>
-                        <% }) %>
-                    </select>
-                    <i class="fa-solid fa-angle-down"></i>
-                </div>
-                <div class="input-container" id="name">
-                    <input type="text" name="name" value="<%= filters.name %>" placeholder="Buscar por nombre">
-                </div>
-                <div class="input-container" id="price">
-                    <input type="number" name="price_min" value="<%= filters.price_min || '' %>" placeholder="Precio minimo">
-                    <input type="number" name="price_max" value="<%= filters.price_max || '' %>" placeholder="Precio maximo">                    
-                </div>
-                
-                
-                <button type="submit">APLICAR FILTROS</button>
-            </form>
-        </div>    
-    </section>
-
-    
-        
-   
-
-    <script src="script/index.js"></script>
-    <script src="script/product.js"></script>
-</body>
-
-</html>
-
+  <%- include('./partials/header') %>
+  <main class="catalog-page section-wrap">
+    <div class="catalog-heading"><span class="eyebrow">ENCONTRÁ ALGO QUE TE INSPIRE</span><h1>Nuestra colección</h1><p>Elegí tus favoritos y sumá un poco de naturaleza a tus espacios.</p></div>
+    <form class="catalog-filters" action="/products" method="GET">
+      <label>Buscar<input type="search" name="name" value="<%= filters.name %>" placeholder="Nombre del producto"></label>
+      <label>Categoría<select name="category_id"><option value="">Todas las categorías</option><% allCategories.forEach(category => { %><option value="<%= category.id %>" <%= String(filters.categoryId) === String(category.id) ? "selected" : "" %>><%= category.name %></option><% }) %></select></label>
+      <label>Precio mínimo<input type="number" name="price_min" min="0" value="<%= filters.priceMin %>" placeholder="Desde"></label>
+      <label>Precio máximo<input type="number" name="price_max" min="0" value="<%= filters.priceMax %>" placeholder="Hasta"></label>
+      <button class="button button-primary" type="submit">Aplicar filtros</button><a class="clear-filters" href="/products">Limpiar</a>
+    </form>
+    <div class="results-line"><span><%= allProducts.length %> producto<%= allProducts.length === 1 ? "" : "s" %></span></div>
+    <% if (allProducts.length) { %>
+      <div class="products-grid"><% allProducts.forEach(product => { %>
+        <a class="product-card" href="/products/<%= product.id %>">
+          <div class="product-image"><img src="<%= product.image || '/image/all-category.png' %>" alt="<%= product.name %>" loading="lazy"><% if (product.stock === 0) { %><span class="stock-tag">Sin stock</span><% } %></div>
+          <div class="product-info"><span class="product-category"><%= product.category ? product.category.name : "Colección" %></span><h2><%= product.name %></h2><% if (product.nickname) { %><p><%= product.nickname %></p><% } %><strong>$<%= Number(product.price).toLocaleString("es-AR") %></strong></div>
+        </a>
+      <% }) %></div>
+    <% } else { %><div class="empty-state"><span>✳</span><h2>No encontramos productos</h2><p>Probá cambiar los filtros o explorar toda la colección.</p><a class="button button-outline" href="/products">Ver todos los productos</a></div><% } %>
+  </main>
+  <footer class="site-footer"><a class="brand" href="/">SAVYA<span>·</span></a><p>Un espacio para conectar con lo natural.</p></footer>
+</body></html>
